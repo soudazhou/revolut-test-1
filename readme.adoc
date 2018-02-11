@@ -38,3 +38,16 @@ Limitations are present:
 - No dynamic parsing of config file, very manual instead
 - Config file loading is ugly (singleton pattern)
 - Cannot easily change property prefix for Properties objects
+
+Considered solutions:
+
+- hardcoded config: ugly
+- properties based config manually implemented mapping to objects
+    (chosen)
+- snakeyaml:
+    Not chosen snakeyaml because it requires the full contents of
+    the yaml to map to the java class.
+    Spring solves this issue somehow though.
+- properties mapped to objects dynamically:
+    no known solution other than spring
+

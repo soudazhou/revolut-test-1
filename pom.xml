@@ -21,6 +21,7 @@
         <jdbi3.version>3.0.1</jdbi3.version>
         <h2.version>1.4.196</h2.version>
         <snakeyaml.version>1.19</snakeyaml.version>
+        <flyway.version>5.0.7</flyway.version>
     </properties>
 
 
@@ -78,6 +79,11 @@
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-sqlobject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
