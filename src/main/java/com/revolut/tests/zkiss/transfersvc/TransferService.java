@@ -1,6 +1,8 @@
 package com.revolut.tests.zkiss.transfersvc;
 
+import com.revolut.tests.zkiss.transfersvc.config.DbProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.jdbi.v3.core.Jdbi;
 import ratpack.func.Action;
 import ratpack.handling.RequestLogger;
 import ratpack.server.RatpackServer;
@@ -19,10 +21,12 @@ public class TransferService {
 
     public static RatpackServer server(Action<ServerConfigBuilder> configure) throws Exception {
         Action<ServerConfigBuilder> configureDefault = config -> config
-                .yaml(ClassLoader.getSystemResource("config.yaml"));
+                .props(ClassLoader.getSystemResource("config.properties"));
         return RatpackServer.of(server -> {
                     server
-                            .registryOf(registry -> registry.add("World!"))
+                            .registryOf(registry -> registry
+                                    .add("World!")
+                                    .add(Jdbi.create(DbProperties.get().getJdbcUrl())))
                             .serverConfig(configureDefault.append(configure))
                             .handlers(root -> root
                                     .all(RequestLogger.ncsa())

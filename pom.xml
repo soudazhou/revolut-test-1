@@ -18,6 +18,9 @@
         <junit.version>4.12</junit.version>
         <lombok.version>1.16.18</lombok.version>
         <assertj.version>2.6.0</assertj.version>
+        <jdbi3.version>3.0.1</jdbi3.version>
+        <h2.version>1.4.196</h2.version>
+        <snakeyaml.version>1.19</snakeyaml.version>
     </properties>
 
 
@@ -27,7 +30,7 @@
                 <groupId>org.jdbi</groupId>
                 <artifactId>jdbi3-bom</artifactId>
                 <type>pom</type>
-                <version>3.0.1</version>
+                <version>${jdbi3.version}</version>
                 <scope>import</scope>
             </dependency>
         </dependencies>
@@ -54,6 +57,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>${snakeyaml.version}</version>
+        </dependency>
+
         <!-- HTTP -->
         <dependency>
             <groupId>io.ratpack</groupId>
@@ -65,6 +74,16 @@
         <dependency>
             <groupId>org.jdbi</groupId>
             <artifactId>jdbi3-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jdbi</groupId>
+            <artifactId>jdbi3-sqlobject</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Test -->

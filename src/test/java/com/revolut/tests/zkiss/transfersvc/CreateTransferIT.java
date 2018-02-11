@@ -28,7 +28,7 @@ public class CreateTransferIT {
     }
 
     @Test
-    public void name() throws Exception {
+    public void shouldReturnStubAnswer() throws Exception {
         app.test(client -> {
             assertThat(client.get("/transfers/asd").getBody().getText()).isEqualTo("Return tx asd");
         });

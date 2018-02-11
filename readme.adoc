@@ -26,3 +26,15 @@ Implicit requirements:
 
 . the code produced by you is expected to be of high quality.
 . there are no detailed requirements, use common sense.
+
+== Implementation Notes
+
+=== Configuration
+
+Limitations are present:
+
+- No possibility to have layered overriding capabilities
+    (like spring profiles)
+- No dynamic parsing of config file, very manual instead
+- Config file loading is ugly (singleton pattern)
+- Cannot easily change property prefix for Properties objects
