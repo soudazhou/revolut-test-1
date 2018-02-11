@@ -1,18 +1,28 @@
 package com.revolut.tests.zkiss.transfersvc;
 
+import lombok.extern.slf4j.Slf4j;
+import ratpack.handling.RequestLogger;
 import ratpack.server.RatpackServer;
-import ratpack.server.ServerConfig;
 
-import java.net.URI;
-
+@Slf4j
 public class TransferService {
+
     public static void main(String... args) throws Exception {
-        RatpackServer.start(server -> server
-                .serverConfig(ServerConfig.embedded().publicAddress(new URI("http://company.org")))
+        server().start();
+    }
+
+    public static RatpackServer server() throws Exception {
+        return RatpackServer.of(server -> server
                 .registryOf(registry -> registry.add("World!"))
-                .handlers(chain -> chain
-                        .get(ctx -> ctx.render("Hello " + ctx.get(String.class)))
-                        .get(":name", ctx -> ctx.render("Hello " + ctx.getPathTokens().get("name") + "!"))
+                .serverConfig(config -> config
+                        .yaml(ClassLoader.getSystemResource("config.yaml"))
+                )
+                .handlers(root -> root
+                        .all(RequestLogger.ncsa())
+                        .prefix("transfers", transfers -> transfers
+                                .post(ctx -> ctx.render("Creates new tx"))
+                                .get(":id", ctx -> ctx.render("Return tx " + ctx.getPathTokens().get("id")))
+                        )
                 )
         );
     }
