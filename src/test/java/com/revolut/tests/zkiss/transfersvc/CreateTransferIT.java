@@ -33,4 +33,14 @@ public class CreateTransferIT {
             assertThat(client.get("/transfers/asd").getBody().getText()).isEqualTo("Return tx asd");
         });
     }
+
+    @Test
+    public void shouldReturnStubAnswerWhenIssueTx() throws Exception {
+        app.test(client -> {
+            client.requestSpec(rs -> rs
+                    .body(body -> body.text("{}"))
+                    .headers(headers -> headers.set("content-type", "application/json")));
+            assertThat(client.post("/transfers").getBody().getText()).isEqualTo("{\"result\":\"Creates new tx\"}");
+        });
+    }
 }
