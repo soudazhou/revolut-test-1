@@ -18,5 +18,8 @@ public class TransferServiceIT {
     @Test
     public void appStartsUp() {
         assertThat(RULE.getConfiguration().getDataSourceFactory().getUrl()).isNotNull();
+
+        boolean healthy = RULE.getEnvironment().healthChecks().runHealthCheck("dbcounter").isHealthy();
+        assertThat(healthy).isTrue();
     }
 }
