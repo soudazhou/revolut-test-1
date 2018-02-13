@@ -6,6 +6,7 @@ import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.skife.jdbi.v2.DBI;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -14,12 +15,15 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class TransferResourceIT {
 
+    private static DBI dbi = mock(DBI.class);
+
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
-            .addResource(new TransferResource())
+            .addResource(new TransferResource(dbi))
             .build();
 
 
