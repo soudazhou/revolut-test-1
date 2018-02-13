@@ -1,10 +1,10 @@
 package com.revolut.tests.zkiss.transfersvc.resources;
 
 
-import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableMap;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.skife.jdbi.v2.DBI;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -16,8 +16,13 @@ import javax.ws.rs.core.MediaType;
 @Slf4j
 public class TransferResource {
 
+    private final DBI dbi;
+
+    public TransferResource(DBI dbi) {
+        this.dbi = dbi;
+    }
+
     @POST
-    @Timed
     public Object transfer(TransferRequest request) {
         // TODO
         log.info("Transfer req {}", request);
