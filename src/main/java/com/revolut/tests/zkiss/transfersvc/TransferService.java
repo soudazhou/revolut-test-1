@@ -1,6 +1,7 @@
 package com.revolut.tests.zkiss.transfersvc;
 
 import com.revolut.tests.zkiss.transfersvc.config.TransferServiceConfig;
+import com.revolut.tests.zkiss.transfersvc.resources.TransferResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -23,6 +24,7 @@ public class TransferService extends Application<TransferServiceConfig> {
     @Override
     public void run(TransferServiceConfig transferServiceConfig, Environment environment) throws Exception {
         // TODO
+        environment.jersey().register(new TransferResource());
 
     }
 }
