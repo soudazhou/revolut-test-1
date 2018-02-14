@@ -43,7 +43,6 @@ public class TransferResourceIT {
                         MediaType.APPLICATION_JSON));
 
         String responseJson = response.readEntity(String.class);
-        System.out.println(responseJson);
         assertThat((String) JsonPath.read(responseJson, "$.transferred")).isEqualTo("false");
     }
 }
