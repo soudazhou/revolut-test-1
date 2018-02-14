@@ -6,9 +6,33 @@
         logicalFilePath="1.0">
 
     <changeSet id="initial_schema" author="zkiss">
-        <createTable tableName="ACCOUNTS">
-            <column name="ID" type="VARCHAR2(36)"/>
+        <createTable tableName="accounts">
+            <column name="id" type="varchar2(36)"/>
+            <column name="account_number" type="varchar2(8)"/>
+            <column name="sort_code" type="varchar2(6)"/>
+            <column name="balance" type="number(12,3)"/>
+            <column name="opened_at" type="timestamp"/>
         </createTable>
+        <addNotNullConstraint tableName="accounts" columnName="id"/>
+        <addPrimaryKey tableName="accounts" columnNames="id"/>
+        <addNotNullConstraint tableName="accounts" columnName="account_number"/>
+        <addNotNullConstraint tableName="accounts" columnName="sort_code"/>
+        <addNotNullConstraint tableName="accounts" columnName="balance"/>
+        <addNotNullConstraint tableName="accounts" columnName="opened_at"/>
+
+        <createTable tableName="transactions">
+            <column name="id" type="varchar2(36)"/>
+            <column name="account_id" type="varchar2(36)"/>
+            <column name="amount" type="number(12,3)"/>
+            <column name="type" type="varchar2(32)"/>
+            <column name="issued_at" type="timestamp"/>
+        </createTable>
+        <addNotNullConstraint tableName="transactions" columnName="id"/>
+        <addPrimaryKey tableName="transactions" columnNames="id"/>
+        <addNotNullConstraint tableName="transactions" columnName="account_id"/>
+        <addNotNullConstraint tableName="transactions" columnName="amount"/>
+        <addNotNullConstraint tableName="transactions" columnName="type"/>
+        <addNotNullConstraint tableName="transactions" columnName="issued_at"/>
     </changeSet>
 
 </databaseChangeLog>
