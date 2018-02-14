@@ -30,20 +30,20 @@ public class TransferResourceIT {
         Response response = resources.target("/transfers")
                 .request()
                 .post(Entity.entity(ImmutableMap.of(
-//                        "from", ImmutableMap.of(
-//                                "sortCode", "asd",
-//                                "accountNumber", "asd"
-//                        ),
-//                        "to", ImmutableMap.of(
-//                                "sortCode", "asd",
-//                                "accountNumber", "asd"
-//                        ),
+                        "from", ImmutableMap.of(
+                                "sortCode", "asd",
+                                "accountNumber", "asd"
+                        ),
+                        "to", ImmutableMap.of(
+                                "sortCode", "asd",
+                                "accountNumber", "asd"
+                        ),
                         "amount", new BigDecimal("12")
                         ),
                         MediaType.APPLICATION_JSON));
 
         String responseJson = response.readEntity(String.class);
         System.out.println(responseJson);
-        assertThat((String)JsonPath.read(responseJson, "$.transferred")).isEqualTo("false");
+        assertThat((String) JsonPath.read(responseJson, "$.transferred")).isEqualTo("false");
     }
 }
