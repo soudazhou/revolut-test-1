@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import io.dropwizard.db.DataSourceFactory;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -14,4 +15,7 @@ public class TransferServiceConfig extends Configuration {
     @Valid
     @NotNull
     private DataSourceFactory dataSourceFactory;
+
+    @NotEmpty
+    private String liquibaseChangelog = "migrations.xml";
 }
