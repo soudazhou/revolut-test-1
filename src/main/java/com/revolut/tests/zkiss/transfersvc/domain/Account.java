@@ -16,6 +16,8 @@ public class Account {
 
     @NotNull
     String sortCode;
+
     @NotNull
     String accountNumber;
+
 }
