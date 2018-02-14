@@ -1,6 +1,7 @@
 package com.revolut.tests.zkiss.transfersvc.resources;
 
 import com.google.common.collect.ImmutableMap;
+import com.jayway.jsonpath.JsonPath;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -26,7 +27,7 @@ public class TransferResourceIT {
 
     @Test
     public void name() {
-        Response request = resources.target("/transfers")
+        Response response = resources.target("/transfers")
                 .request()
                 .post(Entity.entity(ImmutableMap.of(
                         "from", ImmutableMap.of(
@@ -41,6 +42,7 @@ public class TransferResourceIT {
                         ),
                         MediaType.APPLICATION_JSON));
 
-        assertThat(request.readEntity(String.class)).isEqualTo(ImmutableMap.of("transferred", "false"));
+        String responseJson = response.readEntity(String.class);
+        assertThat((String)JsonPath.read(responseJson, "$.transferred")).isEqualTo("false");
     }
 }
