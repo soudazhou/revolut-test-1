@@ -13,7 +13,7 @@ public class TransferServiceIT {
     @ClassRule
     public static final DropwizardAppRule<TransferServiceConfig> RULE =
             new DropwizardAppRule<>(TransferService.class,
-                    ResourceHelpers.resourceFilePath("config.yaml"));
+                    ResourceHelpers.resourceFilePath("config-test.yaml"));
 
     @Test
     public void appStartsUp() {

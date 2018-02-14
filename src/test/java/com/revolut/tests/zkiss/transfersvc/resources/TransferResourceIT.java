@@ -1,8 +1,6 @@
 package com.revolut.tests.zkiss.transfersvc.resources;
 
 import com.google.common.collect.ImmutableMap;
-import com.revolut.tests.zkiss.transfersvc.domain.Account;
-import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -12,7 +10,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -29,21 +26,21 @@ public class TransferResourceIT {
 
     @Test
     public void name() {
-        Response post = resources.target("/transfers")
+        Response request = resources.target("/transfers")
                 .request()
-                .post(Entity.entity(TransferRequest.builder()
-                                .from(Account.builder()
-                                        .sortCode("asd")
-                                        .accountNumber("asd")
-                                        .build())
-                                .to(Account.builder()
-                                        .sortCode("qwe")
-                                        .accountNumber("qwe")
-                                        .build())
-                                .amount(new BigDecimal("12"))
-                                .build(),
+                .post(Entity.entity(ImmutableMap.of(
+                        "from", ImmutableMap.of(
+                                "sortCode", "asd",
+                                "accountNumber", "asd"
+                        ),
+                        "to", ImmutableMap.of(
+                                "sortCode", "asd",
+                                "accountNumber", "asd"
+                        ),
+                        "amount", new BigDecimal("12")
+                        ),
                         MediaType.APPLICATION_JSON));
 
-        assertThat(post.readEntity(Map.class)).isEqualTo(ImmutableMap.of("transferred", "false"));
+        assertThat(request.readEntity(String.class)).isEqualTo(ImmutableMap.of("transferred", "false"));
     }
 }
