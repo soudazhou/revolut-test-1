@@ -8,6 +8,7 @@ import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.skife.jdbi.v2.DBI;
+import org.skife.jdbi.v2.Handle;
 
 public class TransferService extends Application<TransferServiceConfig> {
     public static void main(String[] args) throws Exception {
@@ -30,7 +31,7 @@ public class TransferService extends Application<TransferServiceConfig> {
         environment.jersey().register(new TransferResource(dbi));
 
         environment.lifecycle().manage(new LiquibaseMigrateOnBoot(
-                dbi,
+                () -> LiquibaseMigrateOnBoot.create(dbi.open(), Handle::getConnection),
                 transferServiceConfig.getLiquibaseChangelog()
         ));
     }

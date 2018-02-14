@@ -4,24 +4,42 @@ import io.dropwizard.lifecycle.Managed;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import lombok.Value;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.skife.jdbi.v2.DBI;
-import org.skife.jdbi.v2.Handle;
+
+import java.sql.Connection;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Slf4j
-@Value
+@AllArgsConstructor
 public class LiquibaseMigrateOnBoot implements Managed {
-    DBI dbi;
-    String changelogFile;
+    public interface ClosableConnectionSupplier extends AutoCloseable, Supplier<Connection> {}
+
+    public static <T extends AutoCloseable> ClosableConnectionSupplier create(T closable, Function<T, Connection> connectionSupplier) {
+        return new ClosableConnectionSupplier() {
+            @Override
+            public void close() throws Exception {
+                closable.close();
+            }
+
+            @Override
+            public Connection get() {
+                return connectionSupplier.apply(closable);
+            }
+        };
+    }
+
+    private final Supplier<ClosableConnectionSupplier> connectionSupplier;
+    private final String changelogFile;
 
     @Override
     public void start() throws Exception {
-        try (Handle handle = dbi.open()) {
+        try (ClosableConnectionSupplier connectionSupplier = this.connectionSupplier.get()) {
             Liquibase liquibase = new Liquibase(
                     changelogFile,
                     new ClassLoaderResourceAccessor(),
-                    new JdbcConnection(handle.getConnection())
+                    new JdbcConnection(connectionSupplier.get())
             );
             liquibase.update("");
         }
