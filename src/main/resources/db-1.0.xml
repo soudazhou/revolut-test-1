@@ -13,12 +13,12 @@
             <column name="balance" type="number(12,3)"/>
             <column name="opened_at" type="timestamp"/>
         </createTable>
-        <addNotNullConstraint tableName="accounts" columnName="id"/>
-        <addPrimaryKey tableName="accounts" columnNames="id"/>
-        <addNotNullConstraint tableName="accounts" columnName="account_number"/>
-        <addNotNullConstraint tableName="accounts" columnName="sort_code"/>
-        <addNotNullConstraint tableName="accounts" columnName="balance"/>
-        <addNotNullConstraint tableName="accounts" columnName="opened_at"/>
+        <addNotNullConstraint tableName="accounts" columnName="id" columnDataType="varchar2(36)"/>
+        <addPrimaryKey tableName="accounts" columnNames="id" constraintName="accts_id_pk"/>
+        <addNotNullConstraint tableName="accounts" columnName="account_number" columnDataType="varchar2(8)"/>
+        <addNotNullConstraint tableName="accounts" columnName="sort_code" columnDataType="varchar2(6)"/>
+        <addNotNullConstraint tableName="accounts" columnName="balance" columnDataType="number(12,3)"/>
+        <addNotNullConstraint tableName="accounts" columnName="opened_at" columnDataType="timestamp"/>
 
         <createTable tableName="transactions">
             <column name="id" type="varchar2(36)"/>
@@ -27,12 +27,15 @@
             <column name="type" type="varchar2(32)"/>
             <column name="issued_at" type="timestamp"/>
         </createTable>
-        <addNotNullConstraint tableName="transactions" columnName="id"/>
-        <addPrimaryKey tableName="transactions" columnNames="id"/>
-        <addNotNullConstraint tableName="transactions" columnName="account_id"/>
-        <addNotNullConstraint tableName="transactions" columnName="amount"/>
-        <addNotNullConstraint tableName="transactions" columnName="type"/>
-        <addNotNullConstraint tableName="transactions" columnName="issued_at"/>
+        <addNotNullConstraint tableName="transactions" columnName="id" columnDataType="varchar2(36)"/>
+        <addPrimaryKey tableName="transactions" columnNames="id" constraintName="txs_id_pk"/>
+        <addNotNullConstraint tableName="transactions" columnName="account_id" columnDataType="varchar2(36)"/>
+        <addForeignKeyConstraint baseTableName="transactions" baseColumnNames="account_id"
+                                 referencedTableName="accounts" referencedColumnNames="id"
+                                 constraintName="txs_accts_fk"/>
+        <addNotNullConstraint tableName="transactions" columnName="amount" columnDataType="number(12,3)"/>
+        <addNotNullConstraint tableName="transactions" columnName="type" columnDataType="varchar2(32)"/>
+        <addNotNullConstraint tableName="transactions" columnName="issued_at" columnDataType="timestamp"/>
     </changeSet>
 
 </databaseChangeLog>

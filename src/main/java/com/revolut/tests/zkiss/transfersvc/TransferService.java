@@ -30,8 +30,7 @@ public class TransferService extends Application<TransferServiceConfig> {
         environment.jersey().register(new TransferResource(dbi));
 
         environment.lifecycle().manage(new LiquibaseMigrateOnBoot(
-                transferServiceConfig.getDataSourceFactory(),
-                environment,
+                dbi,
                 transferServiceConfig.getLiquibaseChangelog()
         ));
     }
