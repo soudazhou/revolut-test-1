@@ -1,6 +1,5 @@
 package com.revolut.tests.zkiss.transfersvc;
 
-import com.codahale.metrics.health.HealthCheck;
 import com.revolut.tests.zkiss.transfersvc.config.TransferServiceConfig;
 import com.revolut.tests.zkiss.transfersvc.resources.TransferResource;
 import com.revolut.tests.zkiss.transfersvc.sys.LiquibaseMigrateOnBoot;
@@ -27,7 +26,7 @@ public class TransferService extends Application<TransferServiceConfig> {
     public void run(TransferServiceConfig transferServiceConfig, Environment environment) throws Exception {
         // TODO
         DBIFactory factory = new DBIFactory();
-        DBI dbi = factory.build(environment, transferServiceConfig.getDataSourceFactory(), "db");
+        DBI dbi = factory.build(environment, transferServiceConfig.getDataSourceFactory(), "dbi");
         environment.jersey().register(new TransferResource(dbi));
 
         environment.lifecycle().manage(new LiquibaseMigrateOnBoot(
@@ -35,19 +34,6 @@ public class TransferService extends Application<TransferServiceConfig> {
                 environment,
                 transferServiceConfig.getLiquibaseChangelog()
         ));
-
-        environment.healthChecks().register("dbcounter", new HealthCheck() {
-            @Override
-            protected Result check() throws Exception {
-                Integer count = dbi.open().createQuery("select count(*) from accounts")
-                        .mapTo(Integer.class)
-                        .first();
-                return count >= 0 ?
-                        Result.healthy("Count: %d", count) :
-                        Result.unhealthy("");
-            }
-        });
-
     }
 
 }

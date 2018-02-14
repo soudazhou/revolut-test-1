@@ -12,14 +12,11 @@ public class TransferServiceIT {
 
     @ClassRule
     public static final DropwizardAppRule<TransferServiceConfig> RULE =
-            new DropwizardAppRule<TransferServiceConfig>(TransferService.class,
+            new DropwizardAppRule<>(TransferService.class,
                     ResourceHelpers.resourceFilePath("config.yaml"));
 
     @Test
     public void appStartsUp() {
         assertThat(RULE.getConfiguration().getDataSourceFactory().getUrl()).isNotNull();
-
-        boolean healthy = RULE.getEnvironment().healthChecks().runHealthCheck("dbcounter").isHealthy();
-        assertThat(healthy).isTrue();
     }
 }
