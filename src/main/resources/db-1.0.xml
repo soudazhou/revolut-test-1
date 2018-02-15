@@ -8,6 +8,7 @@
     <changeSet id="initial_schema" author="zkiss">
         <createTable tableName="accounts">
             <column name="id" type="varchar2(36)"/>
+            <column name="version" type="number(12,0)"/>
             <column name="account_number" type="varchar2(8)"/>
             <column name="sort_code" type="varchar2(6)"/>
             <column name="balance" type="number(12,3)"/>
@@ -15,6 +16,7 @@
         </createTable>
         <addNotNullConstraint tableName="accounts" columnName="id" columnDataType="varchar2(36)"/>
         <addPrimaryKey tableName="accounts" columnNames="id" constraintName="accts_id_pk"/>
+        <addNotNullConstraint tableName="accounts" columnName="version" columnDataType="number(12,0)"/>
         <addNotNullConstraint tableName="accounts" columnName="account_number" columnDataType="varchar2(8)"/>
         <addNotNullConstraint tableName="accounts" columnName="sort_code" columnDataType="varchar2(6)"/>
         <addNotNullConstraint tableName="accounts" columnName="balance" columnDataType="number(12,3)"/>
