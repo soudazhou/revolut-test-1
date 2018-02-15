@@ -1,14 +1,14 @@
 package com.revolut.tests.zkiss.transfersvc;
 
-import com.github.arteam.jdbi3.JdbiFactory;
 import com.revolut.tests.zkiss.transfersvc.config.TransferServiceConfig;
 import com.revolut.tests.zkiss.transfersvc.resources.TransferResource;
 import com.revolut.tests.zkiss.transfersvc.sys.LiquibaseMigrateOnBoot;
 import io.dropwizard.Application;
+import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.jdbi.v3.core.Handle;
-import org.jdbi.v3.core.Jdbi;
+import org.skife.jdbi.v2.DBI;
+import org.skife.jdbi.v2.Handle;
 
 public class TransferService extends Application<TransferServiceConfig> {
     public static void main(String[] args) throws Exception {
@@ -26,8 +26,8 @@ public class TransferService extends Application<TransferServiceConfig> {
     @Override
     public void run(TransferServiceConfig transferServiceConfig, Environment environment) throws Exception {
         // TODO
-        JdbiFactory factory = new JdbiFactory();
-        Jdbi dbi = factory.build(environment, transferServiceConfig.getDataSourceFactory(), "dbi");
+        DBIFactory factory = new DBIFactory();
+        DBI dbi = factory.build(environment, transferServiceConfig.getDataSourceFactory(), "dbi");
         environment.jersey().register(new TransferResource(dbi));
 
         environment.lifecycle().manage(new LiquibaseMigrateOnBoot(

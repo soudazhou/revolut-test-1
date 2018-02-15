@@ -18,12 +18,9 @@
         <lombok.version>1.16.18</lombok.version>
         <mockito.version>2.15.0</mockito.version>
         <json-path.version>2.3.0</json-path.version>
-        <jdbi.version></jdbi.version>
     </properties>
 
     <dependencyManagement>
-        <!--
-        -->
         <dependencies>
             <dependency>
                 <groupId>io.dropwizard</groupId>
@@ -31,13 +28,6 @@
                 <version>${dropwizard.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-                <exclusions>
-                    <exclusion>
-                        <!-- uses old jdbi -->
-                        <groupId>org.jdbi</groupId>
-                        <artifactId>jdbi</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -56,9 +46,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.arteam</groupId>
-            <artifactId>dropwizard-jdbi3</artifactId>
-            <version>1.2</version>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-jdbi</artifactId>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
@@ -129,7 +118,7 @@
                 <version>2.20.1</version>
                 <executions>
                     <execution>
-
+                        <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
