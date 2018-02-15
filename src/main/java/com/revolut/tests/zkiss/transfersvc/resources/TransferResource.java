@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
+import org.skife.jdbi.v2.DBI;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 @Slf4j
 public class TransferResource {
 
-    private final Jdbi dbi;
+    private final DBI dbi;
 
     public TransferResource(Jdbi dbi) {
         this.dbi = dbi;

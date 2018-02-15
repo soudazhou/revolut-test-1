@@ -3,9 +3,9 @@ package com.revolut.tests.zkiss.transfersvc.resources;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
 import io.dropwizard.testing.junit.ResourceTestRule;
-import org.jdbi.v3.core.Jdbi;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.skife.jdbi.v2.DBI;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 
 public class TransferResourceIT {
 
-    private static Jdbi dbi = mock(Jdbi.class);
+    private static DBI dbi = mock(DBI.class);
 
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()

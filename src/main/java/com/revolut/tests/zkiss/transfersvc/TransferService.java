@@ -27,11 +27,11 @@ public class TransferService extends Application<TransferServiceConfig> {
     public void run(TransferServiceConfig transferServiceConfig, Environment environment) throws Exception {
         // TODO
         JdbiFactory factory = new JdbiFactory();
-        Jdbi jdbi = factory.build(environment, transferServiceConfig.getDataSourceFactory(), "jdbi");
-        environment.jersey().register(new TransferResource(jdbi));
+        Jdbi dbi = factory.build(environment, transferServiceConfig.getDataSourceFactory(), "dbi");
+        environment.jersey().register(new TransferResource(dbi));
 
         environment.lifecycle().manage(new LiquibaseMigrateOnBoot(
-                () -> LiquibaseMigrateOnBoot.create(jdbi.open(), Handle::getConnection),
+                () -> LiquibaseMigrateOnBoot.create(dbi.open(), Handle::getConnection),
                 transferServiceConfig.getLiquibaseChangelog()
         ));
     }
