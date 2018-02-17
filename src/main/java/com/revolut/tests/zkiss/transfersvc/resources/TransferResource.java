@@ -31,6 +31,7 @@ public class TransferResource {
         // TODO
         return dbi.inTransaction((handle, txStatus) -> {
             TransactionRepo txRepo = handle.attach(TransactionRepo.class);
+
             return ImmutableMap.of("transferred", "false");
         });
     }
