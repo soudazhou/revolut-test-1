@@ -1,10 +1,16 @@
 package com.revolut.tests.zkiss.transfersvc.resources;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.jsonpath.JsonPath;
+import com.revolut.tests.zkiss.transfersvc.domain.TransferResult;
+import io.dropwizard.logging.BootstrapLogging;
 import io.dropwizard.testing.junit.ResourceTestRule;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.skife.jdbi.v2.DBI;
 
 import javax.ws.rs.client.Entity;
@@ -13,11 +19,19 @@ import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+@Slf4j
 public class TransferResourceIT {
 
     private static DBI dbi = mock(DBI.class);
+
+    static {
+        // because of stupid ResourceTestRule
+        BootstrapLogging.bootstrap(Level.DEBUG);
+    }
 
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
@@ -25,8 +39,15 @@ public class TransferResourceIT {
             .build();
 
 
+    @After
+    public void tearDown() throws Exception {
+        Mockito.reset(dbi);
+    }
+
     @Test
     public void name() {
+        when(dbi.inTransaction(any())).thenReturn(new TransferResult(false));
+
         Response response = resources.target("/transfers")
                 .request()
                 .post(Entity.entity(ImmutableMap.of(
@@ -43,6 +64,6 @@ public class TransferResourceIT {
                         MediaType.APPLICATION_JSON));
 
         String responseJson = response.readEntity(String.class);
-        assertThat((String) JsonPath.read(responseJson, "$.transferred")).isEqualTo("false");
+        assertThat((Object) JsonPath.read(responseJson, "$.transferred")).isEqualTo(false);
     }
 }

@@ -9,10 +9,10 @@ import javax.validation.constraints.NotNull;
 
 @Value
 @Builder
-@JsonDeserialize(builder = AccountKey.AccountBuilder.class)
+@JsonDeserialize(builder = AccountKey.AccountKeyBuilder.class)
 public class AccountKey {
     @JsonPOJOBuilder(withPrefix = "")
-    public static final class AccountBuilder {}
+    public static final class AccountKeyBuilder {}
 
     @NotNull
     String sortCode;

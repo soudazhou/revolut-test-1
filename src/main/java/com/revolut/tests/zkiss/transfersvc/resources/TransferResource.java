@@ -28,8 +28,7 @@ public class TransferResource {
     @POST
     public TransferResult transfer(@Valid @NotNull TransferRequest request) {
         log.info("Transfer req {}", request);
-        return dbi.inTransaction((handle, txStatus) ->
-                new Transfer(request, handle).run());
+        return new Transfer(request, dbi).run();
     }
 
 }

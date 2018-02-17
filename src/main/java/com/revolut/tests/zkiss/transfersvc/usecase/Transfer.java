@@ -4,24 +4,26 @@ import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferResult;
 import com.revolut.tests.zkiss.transfersvc.persistence.AccountRepo;
 import com.revolut.tests.zkiss.transfersvc.persistence.TransactionRepo;
-import org.skife.jdbi.v2.Handle;
+import org.skife.jdbi.v2.DBI;
 
 public class Transfer {
     private final TransferRequest request;
-    private final Handle handle;
+    private final DBI dbi;
 
-    public Transfer(TransferRequest request, Handle handle) {
+    public Transfer(TransferRequest request, DBI dbi) {
         this.request = request;
-        this.handle = handle;
+        this.dbi = dbi;
     }
 
     public TransferResult run() {
-        AccountRepo accountRepo = handle.attach(AccountRepo.class);
-        TransactionRepo txRepo = handle.attach(TransactionRepo.class);
+        return dbi.inTransaction(((handle, status) -> {
+            AccountRepo accountRepo = handle.attach(AccountRepo.class);
+            TransactionRepo txRepo = handle.attach(TransactionRepo.class);
 
-        accountRepo.find(request.getFrom().getSortCode(), request.getFrom().getAccountNumber());
+            accountRepo.find(request.getFrom().getSortCode(), request.getFrom().getAccountNumber());
 
-        // TODO
-        return null;
+            // TODO
+            return new TransferResult(false);
+        }));
     }
 }
