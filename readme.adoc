@@ -26,3 +26,24 @@ Implicit requirements:
 
 . the code produced by you is expected to be of high quality.
 . there are no detailed requirements, use common sense.
+
+== Implementation Notes
+
+=== Dropwizard
+
+Things I like
+
+- Endpoint definition is like spring MVC
+- Request payload validation
+
+Things I don't like
+
+* Logging disabled in TransferResourceIT by ResourceTestRule (wtf???)
+* Need to use junit rules to boot up the framework in tests.
+    This makes passing in mocks that are managed by the mockito junit runner
+    impossible, forcing manual mock management
+* Configuration is very basic
+** No hierarchical override system
+** Can't easily just 'plug into' the config and map parts to object,
+    you need to map the whole file from the root to one.
+    This actually isn't too bad.
