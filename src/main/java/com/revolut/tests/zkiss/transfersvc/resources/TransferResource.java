@@ -1,9 +1,9 @@
 package com.revolut.tests.zkiss.transfersvc.resources;
 
 
-import com.google.common.collect.ImmutableMap;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
-import com.revolut.tests.zkiss.transfersvc.persistence.TransactionRepo;
+import com.revolut.tests.zkiss.transfersvc.domain.TransferResult;
+import com.revolut.tests.zkiss.transfersvc.usecase.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.skife.jdbi.v2.DBI;
 
@@ -26,14 +26,10 @@ public class TransferResource {
     }
 
     @POST
-    public Object transfer(@Valid @NotNull TransferRequest request) {
+    public TransferResult transfer(@Valid @NotNull TransferRequest request) {
         log.info("Transfer req {}", request);
-        // TODO
-        return dbi.inTransaction((handle, txStatus) -> {
-            TransactionRepo txRepo = handle.attach(TransactionRepo.class);
-
-            return ImmutableMap.of("transferred", "false");
-        });
+        return dbi.inTransaction((handle, txStatus) ->
+                new Transfer(request, handle).run());
     }
 
 }

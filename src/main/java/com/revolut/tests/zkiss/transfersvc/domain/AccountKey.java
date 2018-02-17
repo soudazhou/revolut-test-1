@@ -5,25 +5,19 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 
 @Value
 @Builder
-@JsonDeserialize(builder = TransferRequest.TransferRequestBuilder.class)
-public final class TransferRequest {
+@JsonDeserialize(builder = AccountKey.AccountBuilder.class)
+public class AccountKey {
     @JsonPOJOBuilder(withPrefix = "")
-    public static final class TransferRequestBuilder {}
+    public static final class AccountBuilder {}
 
     @NotNull
-    AccountKey from;
+    String sortCode;
 
     @NotNull
-    AccountKey to;
-
-    @NotNull
-    @Min(0)
-    BigDecimal amount;
+    String accountNumber;
 
 }

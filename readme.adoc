@@ -29,6 +29,8 @@ Implicit requirements:
 
 == Implementation Notes
 
+1. Decided to ignore the topic of currency conversions.
+
 === Dropwizard
 
 Things I like
