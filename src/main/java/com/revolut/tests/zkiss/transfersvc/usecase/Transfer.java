@@ -8,6 +8,7 @@ import com.revolut.tests.zkiss.transfersvc.persistence.AccountRepo;
 import com.revolut.tests.zkiss.transfersvc.persistence.TransactionRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.skife.jdbi.v2.DBI;
+import org.skife.jdbi.v2.exceptions.CallbackFailedException;
 
 @Slf4j
 public class Transfer {
@@ -20,54 +21,59 @@ public class Transfer {
     }
 
     public TransferResult run() {
-        return dbi.inTransaction(((handle, status) -> {
-            AccountRepo accountRepo = handle.attach(AccountRepo.class);
+        try {
+            return dbi.inTransaction(((handle, status) -> {
+                AccountRepo accountRepo = handle.attach(AccountRepo.class);
 
-            Account from = accountRepo.find(request.getFrom());
-            if (from == null) {
-                status.setRollbackOnly();
-                return TransferResult.fail("from.not-found");
-            }
-            if (!from.hasAtLeast(request.getAmount())) {
-                status.setRollbackOnly();
-                return TransferResult.fail("from.insufficient-funds");
-            }
+                Account from = accountRepo.find(request.getFrom());
+                if (from == null) {
+                    return TransferResult.fail("from.not-found");
+                }
+                if (!from.hasAtLeast(request.getAmount())) {
+                    return TransferResult.fail("from.insufficient-funds");
+                }
 
-            Account to = accountRepo.find(request.getTo());
-            if (to == null) {
-                status.setRollbackOnly();
-                return TransferResult.fail("to.not-found");
-            }
+                Account to = accountRepo.find(request.getTo());
+                if (to == null) {
+                    return TransferResult.fail("to.not-found");
+                }
 
-            from.debit(request.getAmount());
-            to.credit(request.getAmount());
+                from.debit(request.getAmount());
+                to.credit(request.getAmount());
 
-            boolean accountUpdateFailed = !tryUpdate(accountRepo, from) || !tryUpdate(accountRepo, to);
-            if (accountUpdateFailed) {
-                status.setRollbackOnly();
+                tryUpdate(accountRepo, from);
+                tryUpdate(accountRepo, to);
+
+                TransactionRepo txRepo = handle.attach(TransactionRepo.class);
+                txRepo.insert(Transaction.builder()
+                        .accountId(from.getId())
+                        .type(Transaction.TransactionType.OUT)
+                        .amount(request.getAmount())
+                        .message(request.getMessage())
+                        .build());
+                txRepo.insert(Transaction.builder()
+                        .accountId(to.getId())
+                        .type(Transaction.TransactionType.IN)
+                        .amount(request.getAmount())
+                        .message(request.getMessage())
+                        .build());
+
+                return TransferResult.success();
+            }));
+        } catch (CallbackFailedException e) {
+            if (e.getCause() instanceof OptimisticLockingFailureExption) {
                 return TransferResult.fail("optimistic-locking");
             }
-
-            TransactionRepo txRepo = handle.attach(TransactionRepo.class);
-            txRepo.insert(Transaction.builder()
-                    .accountId(from.getId())
-                    .type(Transaction.TransactionType.OUT)
-                    .amount(request.getAmount())
-                    .message(request.getMessage())
-                    .build());
-            txRepo.insert(Transaction.builder()
-                    .accountId(to.getId())
-                    .type(Transaction.TransactionType.IN)
-                    .amount(request.getAmount())
-                    .message(request.getMessage())
-                    .build());
-
-            return TransferResult.success();
-        }));
+            throw e;
+        }
     }
 
-    private boolean tryUpdate(AccountRepo accountRepo, Account account) {
+    private void tryUpdate(AccountRepo accountRepo, Account account) {
         int updateCount = accountRepo.updateWithVersion(account);
-        return updateCount == 1;
+        if (updateCount == 0) {
+            throw new OptimisticLockingFailureExption();
+        }
     }
+
+    private class OptimisticLockingFailureExption extends RuntimeException {}
 }

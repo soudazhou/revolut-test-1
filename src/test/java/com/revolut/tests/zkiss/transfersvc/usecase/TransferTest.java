@@ -78,6 +78,27 @@ public class TransferTest {
         });
     }
 
+    @Test
+    public void shouldNotTransferIfInsufficientBalance() {
+        Transfer transfer = new Transfer(request("Bob", "Alice", "100.4"), db.getDbi());
+
+        TransferResult result = transfer.run();
+
+        assertThat(result.isTransferred()).isFalse();
+        assertThat(result.getErrorCode()).isEqualTo("from.insufficient-funds");
+        db.getDbi().useHandle(h -> {
+            Integer count = h.createQuery("select count(*) from transactions").map(Integer.class).first();
+            assertThat(count).isEqualTo(0);
+            AccountRepo repo = h.attach(AccountRepo.class);
+
+            Account bob = repo.find(keyFor("Bob"));
+            assertThat(bob.getBalance()).isEqualByComparingTo("40");
+
+            Account alice = repo.find(keyFor("Alice"));
+            assertThat(alice.getBalance()).isEqualByComparingTo("20");
+        });
+    }
+
     private Account insertAccount(Handle handle, String id, int balance) {
         AccountRepo repo = handle.attach(AccountRepo.class);
         Account account = Account.builder()
