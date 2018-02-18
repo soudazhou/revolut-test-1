@@ -22,7 +22,6 @@ public class Transfer {
     public TransferResult run() {
         return dbi.inTransaction(((handle, status) -> {
             AccountRepo accountRepo = handle.attach(AccountRepo.class);
-            TransactionRepo txRepo = handle.attach(TransactionRepo.class);
 
             Account from = accountRepo.find(request.getFrom());
             if (from == null) {
@@ -43,11 +42,13 @@ public class Transfer {
             from.debit(request.getAmount());
             to.credit(request.getAmount());
 
-            if (!tryUpdate(accountRepo, from) ||
-                    !tryUpdate(accountRepo, to)) {
+            boolean accountUpdateFailed = !tryUpdate(accountRepo, from) || !tryUpdate(accountRepo, to);
+            if (accountUpdateFailed) {
                 status.setRollbackOnly();
                 return TransferResult.fail("optimistic-locking");
             }
+
+            TransactionRepo txRepo = handle.attach(TransactionRepo.class);
             txRepo.insert(Transaction.builder()
                     .accountId(from.getId())
                     .type(Transaction.TransactionType.OUT)
