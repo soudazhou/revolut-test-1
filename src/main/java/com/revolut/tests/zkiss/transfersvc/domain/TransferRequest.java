@@ -18,6 +18,8 @@ public final class TransferRequest {
     @JsonPOJOBuilder(withPrefix = "")
     public static final class TransferRequestBuilder {}
 
+    // invariants aren't enforced in order to allow hibernate validator to do it's thing
+
     @Valid
     @NotNull
     SortCodeAccountNumber from;
