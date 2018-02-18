@@ -63,7 +63,7 @@ public class Transfer {
                 return TransferResult.success();
             }));
         } catch (CallbackFailedException e) {
-            if (e.getCause() instanceof OptimisticLockingFailureExption) {
+            if (e.getCause() instanceof OptimisticLockingFailureException) {
                 return TransferResult.fail("optimistic-locking");
             }
             throw e;
@@ -73,9 +73,9 @@ public class Transfer {
     private void tryUpdate(AccountRepo accountRepo, Account account) {
         int updateCount = accountRepo.updateWithVersion(account);
         if (updateCount == 0) {
-            throw new OptimisticLockingFailureExption();
+            throw new OptimisticLockingFailureException();
         }
     }
 
-    private class OptimisticLockingFailureExption extends RuntimeException {}
+    private class OptimisticLockingFailureException extends RuntimeException {}
 }
