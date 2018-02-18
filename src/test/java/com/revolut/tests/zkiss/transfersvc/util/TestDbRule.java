@@ -38,9 +38,9 @@ public class TestDbRule extends ExternalResource {
         ds = new HikariDataSource(cfg);
         this.dbi = new DBI(ds);
 
-        // would be  nice if I could use the configuration from dropwizard
-        // it seems that for that I need to boot up the whole dropwizard server which I didn't want to do
-        // So registering mappers that I actually use manually here
+        // would be nice if I could use the configuration from dropwizard
+        // for that I need to boot up the whole dropwizard server which I didn't want to do
+        // so registering mappers that I actually use manually here
         dbi.registerColumnMapper(new InstantMapper());
         dbi.registerArgumentFactory(new InstantArgumentFactory());
         dbi.registerArgumentFactory(new OptionalArgumentFactory(""));
