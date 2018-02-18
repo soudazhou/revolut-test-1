@@ -30,6 +30,7 @@ Implicit requirements:
 == Implementation Notes
 
 1. Decided to ignore the topic of currency conversions.
+1. Using UK bank accounts (sort code, account number)
 
 === Dropwizard
 

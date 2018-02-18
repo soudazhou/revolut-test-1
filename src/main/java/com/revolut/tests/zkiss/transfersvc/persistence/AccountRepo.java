@@ -28,7 +28,7 @@ public interface AccountRepo {
 
     @SqlUpdate("update accounts set version = version+1, balance = :balance" +
             " where id = :id and version = :version")
-    int update(@BindBean Account account);
+    int updateWithVersion(@BindBean Account account);
 
     class AccountRecordMapper implements ResultSetMapper<Account> {
         @Override

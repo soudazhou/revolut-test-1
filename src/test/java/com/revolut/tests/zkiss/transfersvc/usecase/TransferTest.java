@@ -45,7 +45,9 @@ public class TransferTest {
             Account alice = repo.find(keyFor("Alice"));
             Account bob = repo.find(keyFor("Bob"));
             assertThat(alice.getBalance()).isEqualByComparingTo("7");
+            assertThat(alice.getVersion()).isEqualTo(2);
             assertThat(bob.getBalance()).isEqualByComparingTo("53");
+            assertThat(bob.getVersion()).isEqualTo(2);
         });
     }
 
@@ -82,6 +84,7 @@ public class TransferTest {
                 .sortCode(SORT_CODE)
                 .accountNumber(id)
                 .balance(new BigDecimal(balance))
+                .version(1)
                 .build();
         repo.insert(account);
         return account;

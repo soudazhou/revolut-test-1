@@ -68,7 +68,7 @@ public class Transfer {
     }
 
     private void update(AccountRepo accountRepo, Account account) {
-        int updateCount = accountRepo.update(account);
+        int updateCount = accountRepo.updateWithVersion(account);
         if (updateCount == 0) {
             throw new OptimisticLockingFailureException();
         }
