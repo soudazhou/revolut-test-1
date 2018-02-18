@@ -12,6 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TransferServiceIT {
 
+    // no way to run on random port??
+    // no way to run WITHOUT port in memory??
     @ClassRule
     public static final DropwizardAppRule<TransferServiceConfig> RULE =
             new DropwizardAppRule<>(TransferService.class,
