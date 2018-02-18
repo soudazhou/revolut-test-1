@@ -1,8 +1,6 @@
 package com.revolut.tests.zkiss.transfersvc.validation;
 
 import lombok.Data;
-import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,9 +18,7 @@ public class PrecisionValidatorTest {
 
     @Before
     public void setUp() throws Exception {
-        HibernateValidatorConfiguration configure = Validation.byProvider(HibernateValidator.class).configure();
-        configure.messageInterpolator()
-        validator =;
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Test
