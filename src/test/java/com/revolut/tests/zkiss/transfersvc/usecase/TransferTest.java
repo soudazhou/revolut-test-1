@@ -83,6 +83,7 @@ public class TransferTest {
      * This is because I want this test to fail in case the error codes change.
      * Error codes are a part of our API contract and consumers have to adapt.
      * Until they do we need to ensure backwards compatibility so they need to remain the same.
+     * So these tests also act like consumer contract tests
      */
 
     @Test
