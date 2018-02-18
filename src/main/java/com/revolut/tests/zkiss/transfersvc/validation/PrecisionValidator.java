@@ -15,6 +15,6 @@ public class PrecisionValidator implements ConstraintValidator<Precision, BigDec
 
     @Override
     public boolean isValid(BigDecimal value, ConstraintValidatorContext context) {
-        return value.scale() <= precision;
+        return value == null || value.scale() <= precision;
     }
 }

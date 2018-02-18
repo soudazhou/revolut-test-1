@@ -141,9 +141,8 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
-                    <!--
-                    <createDependencyReducedPom>true</createDependencyReducedPom>
-                    -->
+                    <!-- not sure why this pom would be needed, so not generating it -->
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
