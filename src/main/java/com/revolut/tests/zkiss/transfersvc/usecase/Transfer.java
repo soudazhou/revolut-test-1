@@ -6,6 +6,7 @@ import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferResult;
 import com.revolut.tests.zkiss.transfersvc.persistence.AccountRepo;
 import com.revolut.tests.zkiss.transfersvc.persistence.TransactionRepo;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.exceptions.CallbackFailedException;
@@ -25,19 +26,20 @@ public class Transfer {
             return dbi.inTransaction(((handle, status) -> {
                 // turns out jdbi throws an exception if setrollbackonly is called explicitly.
                 // so we have to rely on throwing exceptions in order to transfer information out of this code block
+                // yuck
                 AccountRepo accountRepo = handle.attach(AccountRepo.class);
 
                 Account from = accountRepo.find(request.getFrom());
                 if (from == null) {
-                    return TransferResult.fail("from.not-found");
+                    throw new TransferFailureException("from.not-found");
                 }
                 if (!from.hasAtLeast(request.getAmount())) {
-                    return TransferResult.fail("from.insufficient-funds");
+                    throw new TransferFailureException("from.insufficient-funds");
                 }
 
                 Account to = accountRepo.find(request.getTo());
                 if (to == null) {
-                    return TransferResult.fail("to.not-found");
+                    throw new TransferFailureException("to.not-found");
                 }
 
                 from.debit(request.getAmount());
@@ -63,8 +65,9 @@ public class Transfer {
                 return TransferResult.success();
             }));
         } catch (CallbackFailedException e) {
-            if (e.getCause() instanceof OptimisticLockingFailureException) {
-                return TransferResult.fail("optimistic-locking");
+            if (e.getCause() instanceof TransferFailureException) {
+                TransferFailureException fe = (TransferFailureException) e.getCause();
+                return TransferResult.fail(fe.errorCode);
             }
             throw e;
         }
@@ -73,9 +76,12 @@ public class Transfer {
     private void tryUpdate(AccountRepo accountRepo, Account account) {
         int updateCount = accountRepo.updateWithVersion(account);
         if (updateCount == 0) {
-            throw new OptimisticLockingFailureException();
+            throw new TransferFailureException("optimistic-locking");
         }
     }
 
-    private class OptimisticLockingFailureException extends RuntimeException {}
+    @Value
+    private class TransferFailureException extends RuntimeException {
+        String errorCode;
+    }
 }
