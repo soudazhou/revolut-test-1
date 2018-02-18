@@ -49,3 +49,4 @@ Things I don't like
 ** Can't easily just 'plug into' the config and map parts to object,
     you need to map the whole file from the root to one.
     This actually isn't too bad.
+* Endpoint IT returns http 422 when input fails validation. Should be 400.

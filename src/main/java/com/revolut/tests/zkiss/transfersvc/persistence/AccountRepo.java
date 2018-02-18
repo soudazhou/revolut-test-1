@@ -1,6 +1,7 @@
 package com.revolut.tests.zkiss.transfersvc.persistence;
 
 import com.revolut.tests.zkiss.transfersvc.domain.Account;
+import com.revolut.tests.zkiss.transfersvc.domain.AccountKey;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
@@ -12,15 +13,22 @@ import org.skife.jdbi.v2.tweak.ResultSetMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@RegisterMapper(AccountRepo.AccountRecordMapper.class)
 public interface AccountRepo {
 
     @SqlQuery("select * from accounts where sort_code = :sc and account_number = :accnum")
-    @RegisterMapper(AccountRecordMapper.class)
     Account find(@Bind("sc") String sortCode, @Bind("accnum") String accountNumber);
 
     @SqlUpdate("insert into accounts (id, version, sort_code, account_number, balance, opened_at)" +
             " values (:id, :version, :sortCode, :accountNumber, :balance, :openedAt)")
     void insert(@BindBean Account account);
+
+    @SqlQuery("select * from accounts where sort_code = :sortCode and account_number = :accountNumber")
+    Account find(@BindBean AccountKey key);
+
+    @SqlUpdate("update accounts set version = version+1, balance = :balance" +
+            " where id = :id and version = :version")
+    int update(@BindBean Account account);
 
     class AccountRecordMapper implements ResultSetMapper<Account> {
         @Override

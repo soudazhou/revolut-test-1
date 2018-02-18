@@ -46,7 +46,7 @@ public class TransferResourceIT {
 
     @Test
     public void name() {
-        when(dbi.inTransaction(any())).thenReturn(new TransferResult(false));
+        when(dbi.inTransaction(any())).thenReturn(TransferResult.fail("any"));
 
         Response response = resources.target("/transfers")
                 .request()
@@ -59,11 +59,12 @@ public class TransferResourceIT {
                                 "sortCode", "asd",
                                 "accountNumber", "asd"
                         ),
-                        "amount", new BigDecimal("12")
+                        "amount", new BigDecimal("12.000")
                         ),
                         MediaType.APPLICATION_JSON));
 
         String responseJson = response.readEntity(String.class);
+        log.info("HTTP {}: {}", response.getStatus(), responseJson);
         assertThat((Object) JsonPath.read(responseJson, "$.transferred")).isEqualTo(false);
     }
 }

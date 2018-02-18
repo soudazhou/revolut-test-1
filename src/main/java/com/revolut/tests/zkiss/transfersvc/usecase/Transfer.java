@@ -23,10 +23,35 @@ public class Transfer {
             AccountRepo accountRepo = handle.attach(AccountRepo.class);
             TransactionRepo txRepo = handle.attach(TransactionRepo.class);
 
-            Account from = accountRepo.find(request.getFrom().getSortCode(), request.getFrom().getAccountNumber());
+            Account from = accountRepo.find(request.getFrom());
+            if (from == null) {
+                return TransferResult.fail("from.not-found");
+            }
+            if (!from.has(request.getAmount())) {
+                return TransferResult.fail("from.insufficient-funds");
+            }
 
-            // TODO
-            return new TransferResult(false);
+            Account to = accountRepo.find(request.getTo());
+            if (to == null) {
+                return TransferResult.fail("to.not-found");
+            }
+
+            from.debit(request.getAmount());
+            to.credit(request.getAmount());
+
+            update(accountRepo, from);
+            update(accountRepo, to);
+
+            return TransferResult.success();
         }));
     }
+
+    private void update(AccountRepo accountRepo, Account account) {
+        int updateCount = accountRepo.update(account);
+        if (updateCount == 0) {
+            throw new OptimisticLockingFailureException();
+        }
+    }
+
+    public static class OptimisticLockingFailureException extends RuntimeException {}
 }

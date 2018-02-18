@@ -29,10 +29,13 @@ public class Account {
     private final String accountNumber;
     @NonNull
     private final Instant openedAt;
-
     @NonNull
     private BigDecimal balance;
     private long version;
+
+    public boolean has(BigDecimal amount) {
+        return balance.compareTo(amount) >= 0;
+    }
 
     public void debit(BigDecimal amount) {
         checkPrecision(amount);

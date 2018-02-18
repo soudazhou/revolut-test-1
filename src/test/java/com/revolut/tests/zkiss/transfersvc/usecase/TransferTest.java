@@ -16,15 +16,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class TransferTest {
 
+    public static final String SORT_CODE = "sort";
     @Rule
     public TestDbRule db = new TestDbRule();
 
     @Test
     public void shouldTransferWhenHasBalance() {
-        db.getDbi().withHandle(h -> {
+        db.getDbi().useHandle(h -> {
             insertAccount(h, "Alice", 20);
             insertAccount(h, "Bob", 40);
-            return null;
         });
 
         Transfer transfer = new Transfer(request("Alice", "Bob", "13"), db.getDbi());
@@ -32,12 +32,19 @@ public class TransferTest {
         TransferResult result = transfer.run();
 
         assertThat(result.isTransferred()).isTrue();
+        db.getDbi().useHandle(h -> {
+            AccountRepo repo = h.attach(AccountRepo.class);
+            Account alice = repo.find(SORT_CODE, "Alice");
+            assertThat(alice.getBalance()).isEqualByComparingTo("7");
+            Account bob = repo.find(SORT_CODE, "Bob");
+            assertThat(bob.getBalance()).isEqualByComparingTo("53");
+        });
     }
 
     private void insertAccount(Handle handle, String id, int balance) {
         AccountRepo repo = handle.attach(AccountRepo.class);
         Account account = Account.builder()
-                .sortCode("sort")
+                .sortCode(SORT_CODE)
                 .accountNumber(id)
                 .balance(new BigDecimal(balance))
                 .build();
@@ -47,11 +54,11 @@ public class TransferTest {
     private TransferRequest request(String from, String to, String amount) {
         return TransferRequest.builder()
                 .from(AccountKey.builder()
-                        .sortCode("sort")
+                        .sortCode(SORT_CODE)
                         .accountNumber(from)
                         .build())
                 .to(AccountKey.builder()
-                        .sortCode("sort")
+                        .sortCode(SORT_CODE)
                         .accountNumber(to)
                         .build())
                 .amount(new BigDecimal(amount))

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-
-import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Value
 @Builder
@@ -14,10 +13,10 @@ public class AccountKey {
     @JsonPOJOBuilder(withPrefix = "")
     public static final class AccountKeyBuilder {}
 
-    @NotNull
+    @NotEmpty
     String sortCode;
 
-    @NotNull
+    @NotEmpty
     String accountNumber;
 
 }
