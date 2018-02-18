@@ -35,12 +35,13 @@ public class TestDbRule extends ExternalResource {
     protected void before() throws Throwable {
         HikariConfig cfg = new HikariConfig();
         cfg.setJdbcUrl(jdbcUrl);
+        // need a pool for the in-memory db to survive until the next connection is opened
         ds = new HikariDataSource(cfg);
         this.dbi = new DBI(ds);
 
         // would be nice if I could use the configuration from dropwizard
-        // for that I need to boot up the whole dropwizard server which I didn't want to do
-        // so registering mappers that I actually use manually here
+        // it seems that for that I need to boot up the whole dropwizard server which I didn't want to do
+        // So registering mappers that I actually use manually here
         dbi.registerColumnMapper(new InstantMapper());
         dbi.registerArgumentFactory(new InstantArgumentFactory());
         dbi.registerArgumentFactory(new OptionalArgumentFactory(""));
