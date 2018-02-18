@@ -45,8 +45,8 @@ public class TransferResourceIT {
     }
 
     @Test
-    public void name() {
-        when(dbi.inTransaction(any())).thenReturn(TransferResult.fail("any"));
+    public void shouldAcceptValidRequest() {
+        when(dbi.inTransaction(any())).thenReturn(TransferResult.fail("some-error"));
 
         Response response = resources.target("/transfers")
                 .request()
@@ -66,5 +66,6 @@ public class TransferResourceIT {
         String responseJson = response.readEntity(String.class);
         log.info("HTTP {}: {}", response.getStatus(), responseJson);
         assertThat((Object) JsonPath.read(responseJson, "$.transferred")).isEqualTo(false);
+        assertThat((Object) JsonPath.read(responseJson, "$.errorCode")).isEqualTo("some-error");
     }
 }
