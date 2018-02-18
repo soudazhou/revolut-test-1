@@ -51,3 +51,19 @@ Things I don't like
     you need to map the whole file from the root to one.
     This actually isn't too bad.
 * No obvious way to log http traffic in tests
+
+=== Ratpack
+
+I also considered using Ratpack.
+In fact, I started out with it initially.
+I really liked ratpack's API.
+
+However it is not a full framework, does not offer integration with too many
+things out of the box, like dropwizard does.
+So I decided to swap to dropwizard.
+
+In hindsight I don't know if it was the right decision.
+The final straw with ratpack was the missing integration with hibernate validation
+and no built-in alternative for validating incoming requests.
+
+The branch for ratpack is also in this repository.
