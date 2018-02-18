@@ -42,8 +42,8 @@ public class Transfer {
                 from.debit(request.getAmount());
                 to.credit(request.getAmount());
 
-                update(accountRepo, from);
-                update(accountRepo, to);
+                tryUpdate(accountRepo, from);
+                tryUpdate(accountRepo, to);
                 txRepo.insert(Transaction.builder()
                         .accountId(from.getId())
                         .type(Transaction.TransactionType.OUT)
@@ -67,7 +67,7 @@ public class Transfer {
         }
     }
 
-    private void update(AccountRepo accountRepo, Account account) {
+    private void tryUpdate(AccountRepo accountRepo, Account account) {
         int updateCount = accountRepo.updateWithVersion(account);
         if (updateCount == 0) {
             throw new OptimisticLockingFailureException();
