@@ -23,6 +23,8 @@ public class Transfer {
     public TransferResult run() {
         try {
             return dbi.inTransaction(((handle, status) -> {
+                // turns out jdbi throws an exception if setrollbackonly is called explicitly.
+                // so we have to rely on throwing exceptions in order to transfer information out of this code block
                 AccountRepo accountRepo = handle.attach(AccountRepo.class);
 
                 Account from = accountRepo.find(request.getFrom());

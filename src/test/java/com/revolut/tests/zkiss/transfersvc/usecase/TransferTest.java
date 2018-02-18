@@ -87,7 +87,9 @@ public class TransferTest {
         assertThat(result.isTransferred()).isFalse();
         assertThat(result.getErrorCode()).isEqualTo("from.insufficient-funds");
         db.getDbi().useHandle(h -> {
-            Integer count = h.createQuery("select count(*) from transactions").map(Integer.class).first();
+            Integer count = h.createQuery("select count(*) from transactions")
+                    .map((index, r, ctx) -> r.getInt(1))
+                    .first();
             assertThat(count).isEqualTo(0);
             AccountRepo repo = h.attach(AccountRepo.class);
 
