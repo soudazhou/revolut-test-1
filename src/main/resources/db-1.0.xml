@@ -27,6 +27,7 @@
             <column name="account_id" type="varchar2(36)"/>
             <column name="amount" type="number(12,3)"/>
             <column name="type" type="varchar2(32)"/>
+            <column name="message" type="varchar2(255)"/>
             <column name="issued_at" type="timestamp"/>
         </createTable>
         <addNotNullConstraint tableName="transactions" columnName="id" columnDataType="varchar2(36)"/>

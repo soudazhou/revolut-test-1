@@ -1,7 +1,7 @@
 package com.revolut.tests.zkiss.transfersvc.usecase;
 
 import com.revolut.tests.zkiss.transfersvc.domain.Account;
-import com.revolut.tests.zkiss.transfersvc.domain.AccountKey;
+import com.revolut.tests.zkiss.transfersvc.domain.SortCodeAccountNumber;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferResult;
 import com.revolut.tests.zkiss.transfersvc.persistence.AccountRepo;
@@ -63,8 +63,8 @@ public class TransferTest {
                 .build();
     }
 
-    private AccountKey keyFor(String from) {
-        return AccountKey.builder()
+    private SortCodeAccountNumber keyFor(String from) {
+        return SortCodeAccountNumber.builder()
                 .sortCode(SORT_CODE)
                 .accountNumber(from)
                 .build();

@@ -20,11 +20,11 @@ public final class TransferRequest {
 
     @Valid
     @NotNull
-    AccountKey from;
+    SortCodeAccountNumber from;
 
     @Valid
     @NotNull
-    AccountKey to;
+    SortCodeAccountNumber to;
 
     @NotNull
     @Min(0)

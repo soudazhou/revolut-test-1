@@ -1,7 +1,7 @@
 package com.revolut.tests.zkiss.transfersvc.persistence;
 
 import com.revolut.tests.zkiss.transfersvc.domain.Account;
-import com.revolut.tests.zkiss.transfersvc.domain.AccountKey;
+import com.revolut.tests.zkiss.transfersvc.domain.SortCodeAccountNumber;
 import org.skife.jdbi.v2.StatementContext;
 import org.skife.jdbi.v2.sqlobject.Bind;
 import org.skife.jdbi.v2.sqlobject.BindBean;
@@ -24,7 +24,7 @@ public interface AccountRepo {
     void insert(@BindBean Account account);
 
     @SqlQuery("select * from accounts where sort_code = :sortCode and account_number = :accountNumber")
-    Account find(@BindBean AccountKey key);
+    Account find(@BindBean SortCodeAccountNumber key);
 
     @SqlUpdate("update accounts set version = version+1, balance = :balance" +
             " where id = :id and version = :version")

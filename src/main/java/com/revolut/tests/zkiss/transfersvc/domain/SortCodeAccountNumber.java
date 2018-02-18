@@ -8,8 +8,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 @Value
 @Builder
-@JsonDeserialize(builder = AccountKey.AccountKeyBuilder.class)
-public class AccountKey {
+@JsonDeserialize(builder = SortCodeAccountNumber.AccountKeyBuilder.class)
+public class SortCodeAccountNumber {
     @JsonPOJOBuilder(withPrefix = "")
     public static final class AccountKeyBuilder {}
 
