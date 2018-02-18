@@ -78,6 +78,13 @@ public class TransferTest {
         });
     }
 
+    /*
+     * Not using error code constants that are defined in production code.
+     * This is because I want this test to fail in case the error codes change.
+     * Error codes are a part of our API contract and consumers have to adapt.
+     * Until they do we need to ensure backwards compatibility so they need to remain the same.
+     */
+
     @Test
     public void shouldNotTransferIfInsufficientBalance() {
         Transfer transfer = new Transfer(request("Bob", "Alice", "100.4"), db.getDbi());
@@ -87,10 +94,7 @@ public class TransferTest {
         assertThat(result.isTransferred()).isFalse();
         assertThat(result.getErrorCode()).isEqualTo("from.insufficient-funds");
         db.getDbi().useHandle(h -> {
-            Integer count = h.createQuery("select count(*) from transactions")
-                    .map((index, r, ctx) -> r.getInt(1))
-                    .first();
-            assertThat(count).isEqualTo(0);
+            assertThat(txCount(h)).isEqualTo(0);
             AccountRepo repo = h.attach(AccountRepo.class);
 
             Account bob = repo.find(keyFor("Bob"));
@@ -99,6 +103,44 @@ public class TransferTest {
             Account alice = repo.find(keyFor("Alice"));
             assertThat(alice.getBalance()).isEqualByComparingTo("20");
         });
+    }
+
+    @Test
+    public void shouldFailWhenFromDoesNotExist() {
+        Transfer transfer = new Transfer(request("missing", "Alice", "14"), db.getDbi());
+
+        TransferResult result = transfer.run();
+
+        assertThat(result.isTransferred()).isFalse();
+        assertThat(result.getErrorCode()).isEqualTo("from.not-found");
+        db.getDbi().useHandle(h -> {
+            assertThat(txCount(h)).isEqualTo(0);
+            AccountRepo repo = h.attach(AccountRepo.class);
+            Account alice = repo.find(keyFor("Alice"));
+            assertThat(alice.getBalance()).isEqualByComparingTo("20");
+        });
+    }
+
+    @Test
+    public void shouldFailWhenToDoesNotExist() {
+        Transfer transfer = new Transfer(request("Alice", "missing", "14"), db.getDbi());
+
+        TransferResult result = transfer.run();
+
+        assertThat(result.isTransferred()).isFalse();
+        assertThat(result.getErrorCode()).isEqualTo("to.not-found");
+        db.getDbi().useHandle(h -> {
+            assertThat(txCount(h)).isEqualTo(0);
+            AccountRepo repo = h.attach(AccountRepo.class);
+            Account alice = repo.find(keyFor("Alice"));
+            assertThat(alice.getBalance()).isEqualByComparingTo("20");
+        });
+    }
+
+    private Integer txCount(Handle h) {
+        return h.createQuery("select count(*) from transactions")
+                .map((index, r, ctx) -> r.getInt(1))
+                .first();
     }
 
     private Account insertAccount(Handle handle, String id, int balance) {

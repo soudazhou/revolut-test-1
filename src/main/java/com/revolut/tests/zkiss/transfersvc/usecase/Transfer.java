@@ -13,6 +13,11 @@ import org.skife.jdbi.v2.exceptions.CallbackFailedException;
 
 @Slf4j
 public class Transfer {
+    public static final String FROM_NOT_FOUND = "from.not-found";
+    public static final String FROM_INSUFFICIENT_FUNDS = "from.insufficient-funds";
+    public static final String TO_NOT_FOUND = "to.not-found";
+    public static final String OPTIMISTIC_LOCKING = "optimistic-locking";
+
     private final TransferRequest request;
     private final DBI dbi;
 
@@ -31,15 +36,15 @@ public class Transfer {
 
                 Account from = accountRepo.find(request.getFrom());
                 if (from == null) {
-                    throw new TransferFailureException("from.not-found");
+                    throw new TransferFailureException(FROM_NOT_FOUND);
                 }
                 if (!from.hasAtLeast(request.getAmount())) {
-                    throw new TransferFailureException("from.insufficient-funds");
+                    throw new TransferFailureException(FROM_INSUFFICIENT_FUNDS);
                 }
 
                 Account to = accountRepo.find(request.getTo());
                 if (to == null) {
-                    throw new TransferFailureException("to.not-found");
+                    throw new TransferFailureException(TO_NOT_FOUND);
                 }
 
                 from.debit(request.getAmount());
@@ -76,7 +81,7 @@ public class Transfer {
     private void tryUpdate(AccountRepo accountRepo, Account account) {
         int updateCount = accountRepo.updateWithVersion(account);
         if (updateCount == 0) {
-            throw new TransferFailureException("optimistic-locking");
+            throw new TransferFailureException(OPTIMISTIC_LOCKING);
         }
     }
 
