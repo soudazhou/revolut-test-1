@@ -33,7 +33,7 @@ public class Account {
     private BigDecimal balance;
     private long version;
 
-    public boolean has(BigDecimal amount) {
+    public boolean hasAtLeast(BigDecimal amount) {
         return balance.compareTo(amount) >= 0;
     }
 

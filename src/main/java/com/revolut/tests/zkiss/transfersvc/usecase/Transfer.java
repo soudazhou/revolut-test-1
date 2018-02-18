@@ -7,6 +7,7 @@ import com.revolut.tests.zkiss.transfersvc.persistence.AccountRepo;
 import com.revolut.tests.zkiss.transfersvc.persistence.TransactionRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.skife.jdbi.v2.DBI;
+import org.skife.jdbi.v2.exceptions.CallbackFailedException;
 
 @Slf4j
 public class Transfer {
@@ -19,31 +20,38 @@ public class Transfer {
     }
 
     public TransferResult run() {
-        return dbi.inTransaction(((handle, status) -> {
-            AccountRepo accountRepo = handle.attach(AccountRepo.class);
-            TransactionRepo txRepo = handle.attach(TransactionRepo.class);
+        try {
+            return dbi.inTransaction(((handle, status) -> {
+                AccountRepo accountRepo = handle.attach(AccountRepo.class);
+                TransactionRepo txRepo = handle.attach(TransactionRepo.class);
 
-            Account from = accountRepo.find(request.getFrom());
-            if (from == null) {
-                return TransferResult.fail("from.not-found");
+                Account from = accountRepo.find(request.getFrom());
+                if (from == null) {
+                    return TransferResult.fail("from.not-found");
+                }
+                if (!from.hasAtLeast(request.getAmount())) {
+                    return TransferResult.fail("from.insufficient-funds");
+                }
+
+                Account to = accountRepo.find(request.getTo());
+                if (to == null) {
+                    return TransferResult.fail("to.not-found");
+                }
+
+                from.debit(request.getAmount());
+                to.credit(request.getAmount());
+
+                update(accountRepo, from);
+                update(accountRepo, to);
+
+                return TransferResult.success();
+            }));
+        } catch (CallbackFailedException e) {
+            if (e.getCause() instanceof OptimisticLockingFailureException) {
+                return TransferResult.fail("optimistic-locking");
             }
-            if (!from.has(request.getAmount())) {
-                return TransferResult.fail("from.insufficient-funds");
-            }
-
-            Account to = accountRepo.find(request.getTo());
-            if (to == null) {
-                return TransferResult.fail("to.not-found");
-            }
-
-            from.debit(request.getAmount());
-            to.credit(request.getAmount());
-
-            update(accountRepo, from);
-            update(accountRepo, to);
-
-            return TransferResult.success();
-        }));
+            throw e;
+        }
     }
 
     private void update(AccountRepo accountRepo, Account account) {
