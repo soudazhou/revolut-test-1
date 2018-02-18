@@ -31,4 +31,6 @@ public final class TransferRequest {
     @Precision(3)
     BigDecimal amount;
 
+    String message;
+
 }

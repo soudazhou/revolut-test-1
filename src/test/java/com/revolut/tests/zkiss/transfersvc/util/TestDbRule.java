@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.dropwizard.jdbi.args.InstantArgumentFactory;
 import io.dropwizard.jdbi.args.InstantMapper;
+import io.dropwizard.jdbi.args.OptionalArgumentFactory;
 import liquibase.Liquibase;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
@@ -38,6 +39,7 @@ public class TestDbRule extends ExternalResource {
         this.dbi = new DBI(ds);
         dbi.registerColumnMapper(new InstantMapper());
         dbi.registerArgumentFactory(new InstantArgumentFactory());
+        dbi.registerArgumentFactory(new OptionalArgumentFactory(""));
 
         try (Connection connection = ds.getConnection()) {
             Liquibase liquibase = new Liquibase(

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.skife.jdbi.v2.Handle;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,11 +22,14 @@ public class TransferTest {
     @Rule
     public TestDbRule db = new TestDbRule();
 
+    private String aliceId;
+    private String bobId;
+
     @Before
     public void setUp() throws Exception {
         db.getDbi().useHandle(h -> {
-            insertAccount(h, "Alice", 20);
-            insertAccount(h, "Bob", 40);
+            aliceId = insertAccount(h, "Alice", 20).getId();
+            bobId = insertAccount(h, "Bob", 40).getId();
         });
     }
 
@@ -45,7 +49,34 @@ public class TransferTest {
         });
     }
 
-    private void insertAccount(Handle handle, String id, int balance) {
+    @Test
+    public void shouldRegisterTransactionsWhenTransferred() {
+        Transfer transfer = new Transfer(
+                request("Alice", "Bob", "13.5", "Thanks for the loan"),
+                db.getDbi()
+        );
+
+        TransferResult result = transfer.run();
+
+        assertThat(result.isTransferred()).isTrue();
+        db.getDbi().useHandle(h -> {
+            Map<String, Object> aliceTx = h.createQuery("select * from transactions where account_id = :accountId")
+                    .bind("accountId", aliceId)
+                    .first();
+            assertThat(aliceTx.get("amount")).isEqualTo(new BigDecimal("13.500"));
+            assertThat(aliceTx.get("type")).isEqualTo("OUT");
+            assertThat(aliceTx.get("message")).isEqualTo("Thanks for the loan");
+
+            Map<String, Object> bobTx = h.createQuery("select * from transactions where account_id = :accountId")
+                    .bind("accountId", bobId)
+                    .first();
+            assertThat(bobTx.get("amount")).isEqualTo(new BigDecimal("13.500"));
+            assertThat(bobTx.get("type")).isEqualTo("IN");
+            assertThat(bobTx.get("message")).isEqualTo("Thanks for the loan");
+        });
+    }
+
+    private Account insertAccount(Handle handle, String id, int balance) {
         AccountRepo repo = handle.attach(AccountRepo.class);
         Account account = Account.builder()
                 .sortCode(SORT_CODE)
@@ -53,13 +84,19 @@ public class TransferTest {
                 .balance(new BigDecimal(balance))
                 .build();
         repo.insert(account);
+        return account;
     }
 
     private TransferRequest request(String from, String to, String amount) {
+        return request(from, to, amount, null);
+    }
+
+    private TransferRequest request(String from, String to, String amount, String message) {
         return TransferRequest.builder()
                 .from(keyFor(from))
                 .to(keyFor(to))
                 .amount(new BigDecimal(amount))
+                .message(message)
                 .build();
     }
 

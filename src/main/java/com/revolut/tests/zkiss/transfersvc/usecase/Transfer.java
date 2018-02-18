@@ -1,6 +1,7 @@
 package com.revolut.tests.zkiss.transfersvc.usecase;
 
 import com.revolut.tests.zkiss.transfersvc.domain.Account;
+import com.revolut.tests.zkiss.transfersvc.domain.Transaction;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferRequest;
 import com.revolut.tests.zkiss.transfersvc.domain.TransferResult;
 import com.revolut.tests.zkiss.transfersvc.persistence.AccountRepo;
@@ -43,6 +44,18 @@ public class Transfer {
 
                 update(accountRepo, from);
                 update(accountRepo, to);
+                txRepo.insert(Transaction.builder()
+                        .accountId(from.getId())
+                        .type(Transaction.TransactionType.OUT)
+                        .amount(request.getAmount())
+                        .message(request.getMessage())
+                        .build());
+                txRepo.insert(Transaction.builder()
+                        .accountId(to.getId())
+                        .type(Transaction.TransactionType.IN)
+                        .amount(request.getAmount())
+                        .message(request.getMessage())
+                        .build());
 
                 return TransferResult.success();
             }));
