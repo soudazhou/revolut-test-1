@@ -11,9 +11,6 @@ import org.junit.Test;
 import org.skife.jdbi.v2.Handle;
 
 import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,13 +37,10 @@ public class TransferTest {
     private void insertAccount(Handle handle, String id, int balance) {
         AccountRepo repo = handle.attach(AccountRepo.class);
         Account account = Account.builder()
+                .sortCode("sort")
+                .accountNumber(id)
+                .balance(new BigDecimal(balance))
                 .build();
-        account.setId(UUID.randomUUID().toString());
-        account.setSortCode("sort");
-        account.setAccountNumber(id);
-        account.setBalance(new BigDecimal(balance));
-        account.setOpenedAt(Instant.now().minus(Duration.ofDays(4)));
-        account.setVersion(1);
         repo.insert(account);
     }
 
