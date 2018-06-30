@@ -71,6 +71,11 @@
             <artifactId>ratpack-core</artifactId>
             <version>${ratpack.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.ratpack</groupId>
+            <artifactId>ratpack-guice</artifactId>
+            <version>${ratpack.version}</version>
+        </dependency>
 
         <!-- DB -->
         <dependency>
